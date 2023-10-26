@@ -43,8 +43,13 @@ spec:
       volumes:
       - name: git-secret
         secret:
-          defaultMode: 256
           secretName: git-deploy-key
+          defaultMode: 0400
+          items:
+          - key: "id_rsa"
+            path: "ssh"
+          - key: "known_hosts"
+            path: "known_hosts"
       containers:
         - name: "{{ $name }}"
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
