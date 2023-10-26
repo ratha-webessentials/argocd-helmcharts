@@ -26,10 +26,8 @@ spec:
         - name: "{{ $name }}"
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
-          args:
-          - "--kaniko--dockerfile={{ $build.git.dockerfile }}"
-          - "--kaniko--context={{ $build.git.context }}"
-          - "--kaniko--destination={{ $build.target.image }}:{{ $build.target.version }}"
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do echo $(date -u) >> /data/out.txt; sleep 2592000; done"]
           ports:
             - name: http
               containerPort: 9000
