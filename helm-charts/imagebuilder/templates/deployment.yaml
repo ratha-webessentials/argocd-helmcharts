@@ -33,8 +33,6 @@ spec:
           value: main
         - name: GIT_SYNC_DEST
           value: "/workspace"
-        - name: GIT_SYNC_ONE_TIME
-          value: "true"
         - name: GIT_SYNC_SSH
           value: "true"
       volumes:
