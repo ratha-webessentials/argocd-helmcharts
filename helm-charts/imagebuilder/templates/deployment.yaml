@@ -23,10 +23,23 @@ spec:
       serviceAccountName: {{ include "imagebuilder.serviceAccountName" $ }}
       restartPolicy: Always
       initContainers:
-      - name: git-cloner
-        image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
-        command: ["/bin/bash"]
-        args: ["-c", "git clone {{ required "git repo is required" $build.git.repo }} /workspace"]
+      - name: git-sync
+        image: k8s.gcr.io/git-sync-amd64:v2.0.6
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: git-secret
+          mountPath: /etc/git-secret
+        env:
+        - name: GIT_SYNC_REPO
+          value: "{{ required "git repo is required" $build.git.repo }}"
+        - name: GIT_SYNC_BRANCH
+          value: main
+        - name: GIT_SYNC_DEST
+          value: "1"
+        - name: GIT_SYNC_ONE_TIME
+          value: "true"
+        - name: GIT_SYNC_SSH
+          value: "true"
       containers:
         - name: "{{ $name }}"
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
@@ -41,6 +54,11 @@ spec:
             runAsUser: 0
           resources:
             {{- toYaml $.Values.resources | nindent 12 }}
+    volumes:
+      - name: git-secret
+        secret:
+          defaultMode: 256
+          secretName: git-deploy-key
       {{- with $.Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
