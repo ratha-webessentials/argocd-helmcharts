@@ -38,11 +38,10 @@ spec:
             {{- toYaml $.Values.resources | nindent 12 }}
           initContainers:
           - name: git-cloner
-            image: alpine/git
+            image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
             args:
+              - "git"
               - "clone"
-              - "--single-branch"
-              - "--"
               - "{{ required "git repo is required" $build.git.repo }}"
               - "/workspace"
       {{- with $.Values.nodeSelector }}
