@@ -24,7 +24,7 @@ spec:
       restartPolicy: Always
       initContainers:
       - name: git-sync
-        image: k8s.gcr.io/git-sync-amd64:v2.0.6
+        image: openweb/git-sync:0.0.1
         imagePullPolicy: Always
         volumeMounts:
         - name: git-secret
