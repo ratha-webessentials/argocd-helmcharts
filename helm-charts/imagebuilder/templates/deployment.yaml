@@ -23,24 +23,10 @@ spec:
       serviceAccountName: {{ include "imagebuilder.serviceAccountName" $ }}
       restartPolicy: Always
       containers:
-        - name: runner
-          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
-          imagePullPolicy: {{ $.Values.image.pullPolicy }}
-          args:
-          - "--runner"
-          - "sleep=5"
-          - "--runner"
-          - "sync=30"
-          - "--runner"
-          - "build"
-          - "--no-exit"
         - name: "{{ $name }}"
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           args:
-          - "--git-repo={{ required "git repo is required" $build.git.repo }}"
-          - "--git-branch={{ required "git branch is required" $build.git.branch }}"
-          - "--git-rev={{ required "git revision is required" $build.git.revision }}"
           - "--kaniko--dockerfile={{ $build.git.dockerfile }}"
           - "--kaniko--context={{ $build.git.context }}"
           - "--kaniko--destination={{ $build.target.image }}:{{ $build.target.version }}"
@@ -52,6 +38,15 @@ spec:
             runAsUser: 0
           resources:
             {{- toYaml $.Values.resources | nindent 12 }}
+          initContainers:
+          - name: git-cloner
+            image: alpine/git
+            args:
+              - "clone"
+              - "--single-branch"
+              - "--"
+              - "{{ required "git repo is required" $build.git.repo }}"
+              - "/workspace"
       {{- with $.Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
