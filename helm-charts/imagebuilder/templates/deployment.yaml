@@ -40,11 +40,7 @@ spec:
           - name: git-cloner
             image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
             command: ["/bin/bash"]
-            args:
-              - "git"
-              - "clone"
-              - "{{ required "git repo is required" $build.git.repo }}"
-              - "/workspace"
+            args: ["-c", "git clone {{ required "git repo is required" $build.git.repo }} /workspace"]
       {{- with $.Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
