@@ -26,9 +26,6 @@ spec:
       - name: git-sync
         image: openweb/git-sync:0.0.1
         imagePullPolicy: Always
-        volumeMounts:
-        - name: git-secret
-          mountPath: /etc/git-secret
         env:
         - name: GIT_SYNC_REPO
           value: "{{ required "git repo is required" $build.git.repo }}"
