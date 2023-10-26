@@ -39,6 +39,7 @@ spec:
           initContainers:
           - name: git-cloner
             image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+            command: ["/bin/bash"]
             args:
               - "git"
               - "clone"
