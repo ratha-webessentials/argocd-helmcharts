@@ -1,0 +1,44 @@
+# Default values for imagebuilder.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+builds:
+  api:
+    target:
+      image: wehostasia/api
+      version: latest
+
+    git:
+      repo: git@github.com:ratha-webessentials/test.git
+      branch: main
+      revision: HEAD
+
+image:
+  repository: wehostasia/imagebuilder
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets:
+- name: registry-secret
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2G
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
