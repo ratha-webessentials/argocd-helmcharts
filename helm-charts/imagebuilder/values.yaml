@@ -11,7 +11,7 @@ builds:
       version: latest
 
     git:
-      repo: git@github.com:ratha-webessentials/test.git
+      repo: https://github.com/ratha-webessentials/test.git
       branch: main
       revision: HEAD
 
