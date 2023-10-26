@@ -23,17 +23,6 @@ spec:
       serviceAccountName: {{ include "imagebuilder.serviceAccountName" $ }}
       restartPolicy: Always
       containers:
-        - name: runner
-          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
-          imagePullPolicy: {{ $.Values.image.pullPolicy }}
-          args:
-          - "--runner"
-          - "sleep=5"
-          - "--runner"
-          - "sync=30"
-          - "--runner"
-          - "build"
-          - "--no-exit"
         - name: "{{ $name }}"
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
@@ -41,6 +30,9 @@ spec:
           - "--git-repo={{ required "git repo is required" $build.git.repo }}"
           - "--git-branch={{ required "git branch is required" $build.git.branch }}"
           - "--git-rev={{ required "git revision is required" $build.git.revision }}"
+          - "--kaniko--dockerfile={{ $build.git.dockerfile }}"
+          - "--kaniko--context={{ $build.git.context }}"
+          - "--kaniko--destination={{ $build.target.image }}:{{ $build.target.version }}"
           ports:
             - name: http
               containerPort: 9000
