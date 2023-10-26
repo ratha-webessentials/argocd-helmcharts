@@ -23,6 +23,17 @@ spec:
       serviceAccountName: {{ include "imagebuilder.serviceAccountName" $ }}
       restartPolicy: Always
       containers:
+        - name: runner
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          args:
+          - "--runner"
+          - "sleep=5"
+          - "--runner"
+          - "sync=30"
+          - "--runner"
+          - "build"
+          - "--no-exit"
         - name: "{{ $name }}"
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
