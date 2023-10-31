@@ -22,24 +22,6 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "imagebuilder.serviceAccountName" $ }}
       restartPolicy: Always
-      initContainers:
-      - name: git-sync
-        image: openweb/git-sync:0.0.1
-        imagePullPolicy: Always
-        env:
-        - name: GIT_SYNC_REPO
-          value: "{{ required "git repo is required" $build.git.repo }}"
-        - name: GIT_SYNC_BRANCH
-          value: main
-        - name: GIT_SYNC_DEST
-          value: "/workspace"
-        - name: GIT_SYNC_SSH
-          value: "true"
-      volumes:
-      - name: git-secret
-        secret:
-          secretName: git-creds
-          defaultMode: 256
       containers:
         - name: "{{ $name }}"
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
@@ -52,8 +34,47 @@ spec:
               protocol: TCP
           securityContext:
             runAsUser: 0
+          volumeMounts:
+          - name: source
+            mountPath: /workspace
           resources:
             {{- toYaml $.Values.resources | nindent 12 }}
+        - name: git-sync
+          image: "{{ $.Values.image.gitsynce.repository }}:{{ $.Values.image.gitsynce.tag }}"
+          securityContext:
+            runAsUser: 65533
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["all"]
+          volumeMounts:
+          - name: source
+            mountPath: /workspace
+          - name: git-secret
+            mountPath: /etc/git-secret
+          env:
+          - name: GIT_SYNC_REPO
+            value: "{{ required "git repo is required" $build.git.repo }}"
+          - name: GIT_SYNC_BRANCH
+            value: main
+          - name: GIT_SYNC_SSH
+            value: "true"
+          - name: GIT_SYNC_WAIT
+            value: "60"
+          - name: GIT_SYNC_ROOT
+            value: /workspace
+          - name: GIT_SYNC_DEST
+            value: files
+      volumes:
+      - name: config
+        configMap:
+          name: config
+      - name: git-creds
+        secret:
+          secretName: git-creds
+          defaultMode: 288
+      - name: source
+        emptyDir: {}
       {{- with $.Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

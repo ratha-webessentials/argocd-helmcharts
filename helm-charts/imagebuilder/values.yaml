@@ -11,7 +11,7 @@ builds:
       version: latest
 
     git:
-      repo: https://github.com/ratha-webessentials/test.git
+      repo: git@github.com:ratha-webessentials/test.git
       branch: main
       revision: HEAD
 
@@ -19,6 +19,9 @@ image:
   repository: wehostasia/imagebuilder
   pullPolicy: Always
   tag: "latest"
+  gitsynce:
+    repository: k8s.gcr.io/git-sync
+    tag: "v3.0.1"
 
 imagePullSecrets:
 - name: registry-secret
