@@ -50,7 +50,7 @@ spec:
           volumeMounts:
           - name: source
             mountPath: /workspace
-          - name: git-secret
+          - name: git-creds
             mountPath: /etc/git-secret
           env:
           - name: GIT_SYNC_REPO
@@ -66,9 +66,6 @@ spec:
           - name: GIT_SYNC_DEST
             value: files
       volumes:
-      - name: config
-        configMap:
-          name: config
       - name: git-creds
         secret:
           secretName: git-creds
