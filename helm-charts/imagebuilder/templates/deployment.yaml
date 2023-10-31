@@ -69,7 +69,7 @@ spec:
       - name: git-creds
         secret:
           secretName: git-creds
-          defaultMode: 288
+          defaultMode: 256
       - name: source
         emptyDir: {}
       {{- with $.Values.nodeSelector }}
