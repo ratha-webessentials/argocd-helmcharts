@@ -42,7 +42,7 @@ spec:
         - name: git-sync
           image: "{{ $.Values.image.gitsynce.repository }}:{{ $.Values.image.gitsynce.tag }}"
           securityContext:
-            runAsUser: 65533
+            runAsUser: 0
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
